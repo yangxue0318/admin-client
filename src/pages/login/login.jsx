@@ -1,7 +1,11 @@
 import React,{Component} from 'react'
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button, Checkbox,message} from 'antd';
 import './login.less'
-import logo from './images/logo.png'
+import logo from '../../assets/images/logo.png'
+import {Redirect} from 'react-router-dom'
+import {reqLogin} from '../../api'
+import storageUtils from '../../utils/storageUtils'
+import memoryUtils from '../../utils/memoryUtils'
 const Item =Form.Item
  class Login extends Component{
     validatorPWd=(rule,value,callback)=>{
@@ -31,15 +35,37 @@ const Item =Form.Item
 
         // alert('发送ajax请求 ')
         //统一验证
-        this.props.form.validateFields((err, {username,password}) => {
+        this.props.form.validateFields(async(err, {username,password}) => {
             if (!err) {
-              console.log(`你登陆的用户名是${username},你的密码是${password}`);
+           
+             // console.log(`你登陆的用户名是${username},你的密码是${password}`);
+            const result=await reqLogin(username,password)
+            //登陆成功
+            if(result.status===0){
+              //将user信息保存在local当中
+              const user=result.data;
+             
+              //localStorage.setItem('user_key',JSON.stringify(user))
+              storageUtils.saveUser(user)
+              //保存在内存当中
+              memoryUtils.user=user;
+              //跳转到管理界面
+              this.props.history.replace('/')
             }else{
-                alert('验证失败');
+               message.error(result.msg);
             }
-          });
-      };
+          }
+          
+          })
+       
+      }
     render(){
+        //读取保存的user,如果存在，直接跳转到管理界面
+      //const user=JSON.parse(localStorage.getItem('user_key')||'{}')
+      const user=memoryUtils.user
+      if(user._id){
+          return <Redirect to="/"></Redirect>
+      }
         const { getFieldDecorator } = this.props.form;
         return (
             <div className="login">

@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Button, message} from 'antd'
-import {BrowserRouter,HashRouter,Switch,Route,Redirect} from 'react-router-dom'
+import {Switch,Route,Redirect} from 'react-router-dom'
  import Login from './pages/login/login' 
  import Admin from './pages/admin/admin'
 
@@ -17,8 +17,8 @@ import {BrowserRouter,HashRouter,Switch,Route,Redirect} from 'react-router-dom'
        
          <Switch>
            <Route path="/login"  component={Login}></Route>
-           {/* <Route path="/"  Component={Admin}></Route> */}
-           <Redirect to="/login"></Redirect>
+           <Route path="/"  component={Admin}></Route>
+           {/* <Redirect to="/login"></Redirect> */}
          </Switch>
       
       )
