@@ -31,7 +31,7 @@ export const reqAddCategory=(categoryName)=>ajax.post('/manage/category/add',{
     categoryName
 });
 //修改分类
-export const reqUpdateCategory=({categoryId,categoryName})=>ajax.post('/manage/category/updata',{
+export const reqUpdateCategory=({categoryId,categoryName})=>ajax.post('/manage/category/update',{
     categoryId,
     categoryName
 });

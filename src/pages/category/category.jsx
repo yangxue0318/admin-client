@@ -78,7 +78,7 @@ export default class Category extends Component{
               result=await reqAddCategory(categoryName)
           }else{//修改
             const categoryId=this.category._id;
-            result= reqAddCategory({categoryId,categoryName})
+            result=await reqUpdateCategory({categoryId,categoryName})
 
           }
          
@@ -88,9 +88,9 @@ export default class Category extends Component{
             if(result.status===0){
          //重新获取分类列表显示
                 this.getCategorys();
-                message.success(action+'添加分类成功')
+                message.success(action+'分类成功')
             }else{
-                 message.error(action+'添加分类失败')
+                 message.error(action+'分类失败')
                }
             }
     });
