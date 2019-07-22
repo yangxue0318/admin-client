@@ -110,7 +110,9 @@ export default class Category extends Component{
         //读取更新分类的名称
         const category=this.category || {}
      const extra=(
-        <Button type="primary" onClick={()=>{this.setState({showStatus:1})}}>
+        <Button type="primary" onClick={()=>{
+            this.category={};
+            this.setState({showStatus:1})}}>
         <Icon type="plus"/>
         添加
         </Button>

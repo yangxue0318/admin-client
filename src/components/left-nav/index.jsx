@@ -1,48 +1,75 @@
+   
 import React,{Component} from 'react'
 import {Link,withRouter} from 'react-router-dom'
 import './index.less'
 import logo from '../../assets/images/logo.png'
 import { Menu, Icon, Button } from 'antd';
 import menuList from '../../config/menuConfig'
+import memoryUtils from '../../utils/memoryUtils';
 const { SubMenu } = Menu;
 
  class LeftNav extends Component{
+   //判断当前用户是否有此item的权限
+  hasAuth  = (item) => {
+    // 得到当前用户的所有权限
+    const user = memoryUtils.user
+    const menus = user.role.menus
+    // 1. 如果当前用户是admin
+    // 2. 如果item是公开的
+    // 3. 当前用户有此item的权限
+    if (user.username === 'admin' || item.public || menus.indexOf(item.key)!=-1) {
+      return true
+    } else if (item.children) {
+      // 如果当前用户有item的某个子节点的权限, 当前item也应该显示
+      const cItem = item.children.find(cItem => menus.indexOf(cItem.key)!=-1)
+      return !!cItem 
+    }
+
+    
+    return false
+  }
      //根据指定的menu数组生成<Item>和<SubMenu>数组</SubMenu>
     //redaus+函数递归
-// getMenuNodes2=(menuList)=>{
-//     return menuList.reduce((pre,item)=>{
-//         if(!item.children){
-//             pre.push (
-//                 <Menu.Item key={item.key}>
-//                     <Link to={item.key}>
-//                     <Icon type={item.Icon} />
-//                      <span>{item.title}</span></Link>
-//                    </Menu.Item>
-//             )
-//         }else{
-//            pre.push (
-//                 <SubMenu
-//                 key={item.key}
-//                 title={
-//                   <span>
-//                     <Icon type={item.Icon} />
-//                     <span>{item.title}</span>
-//                   </span>
-//                 }
-//               >
-//                   {
+ getMenuNodes2=(menuList)=>{
+  const path = this.props.location.pathname
+     return menuList.reduce((pre,item)=>{
+      if (this.hasAuth(item)) {
+        if(!item.children){
+            pre.push ((
+                 <Menu.Item key={item.key}>
+                    <Link to={item.key}>
+                    <Icon type={item.Icon} />
+                     <span>{item.title}</span></Link>
+                  </Menu.Item>
+            ))
+         }else{
+           const cItem = item.children.find(cItem => path.indexOf(cItem.key) === 0)
+          if (cItem) {
+            this.openKey = item.key
+          }
+            pre.push ((
+                <SubMenu
+                key={item.key}
+                title={
+                   <span>
+                    <Icon type={item.icon} />
+                    <span>{item.title}</span>
+                   </span>
+                }
+             >
+{
                      
-//                       this.getMenuNodes2(item.children)
-//                   }
-    
-//               </SubMenu>
+                      this.getMenuNodes2(item.children)
+                  }
+                 </SubMenu>
 
-//             )
-//         }
-//         return pre;
-//     },[])
+            ))
+                }
+        }
+        return pre;
+    },[])
 
-// }
+ }
 
     //根据指定的menu数组生成<Item>和<SubMenu>数组</SubMenu>
     //map+函数递归
@@ -61,9 +88,8 @@ const { SubMenu } = Menu;
             }else {
                 //判断当前的item的key是否是我需要的openkey
                 //查找item的所有children中cItem的key,看是否有一个跟请求匹配的path
-               const cItem=item.children.find(cItem=>cItem.key===path)
-                if(cItem){
-                    this.openKey=item.key;
+                if (item.children.find(cItem => path.indexOf(cItem.key) === 0)) {
+                  this.openKey = item.key
                 }
             
         
@@ -93,12 +119,16 @@ const { SubMenu } = Menu;
     }
     //第一次rebder做一些同步的准备工作
     componentWillMount(){
-        this.menuNodes= this.getMenuNodes(menuList)
+        this.menuNodes= this.getMenuNodes2(menuList)
     }
     render(){
        
         //得到当前请求的路由路径
-        const selectKey=this.props.location.pathname;
+       
+        let selectKey = this.props.location.pathname // /product/xxx
+        if (selectKey.indexOf('/product')===0) {
+          selectKey = '/product'
+        }
         //const selectKey = this.props.location.pathname
         return (
             <div className="left-nav">
