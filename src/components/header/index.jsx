@@ -8,6 +8,7 @@ import storageUtils from '../../utils/storageUtils'
 import menuList from '../../config/menuConfig'
 import {reqWeather} from '../../api'
 import LinkButton from '../../components/link-button'
+import {connect} from 'react-redux'
 // const { confirm } = Modal;
  class Header extends Component{
      state={
@@ -74,7 +75,8 @@ import LinkButton from '../../components/link-button'
    render(){
        const {currentTime,dayPictureUrl, weather}=this.state;
        //得到当前需要显示的title
-       const title=this.getTitle();
+      // const title=this.getTitle();
+      const title=this.props.headerTitle
        const user=memoryUtils.user;
        return (
            <div className="header">
@@ -96,4 +98,9 @@ import LinkButton from '../../components/link-button'
        )
    }
 }
-export default withRouter(Header);
+export default connect(
+ state=>({
+    headerTitle:state.headerTitle
+ }),
+ {}
+)(withRouter(Header));
