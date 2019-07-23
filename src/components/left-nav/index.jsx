@@ -37,9 +37,13 @@ class LeftNav extends Component {
     return menuList.reduce((pre, item) => {
       if (this.hasAuth(item)) {
         if (!item.children) {
+          //找到path对应的item,gengxinheaderTitle状态，值是item的title
+          if(item.key===path||path.indexOf(item.key)===0){
+            this.props.setHeaderTitle(item.title)
+          }
           pre.push((
             <Menu.Item key={item.key}>
-               <Link to={item.key} >
+               <Link to={item.key} onClick={()=>this.props.setHeaderTitle(item.title)} >
                 <Icon type={item.Icon} />
                 <span>{item.title}</span></Link>
             </Menu.Item>
@@ -82,7 +86,7 @@ class LeftNav extends Component {
       if (!item.children) {
         return (
           <Menu.Item key={item.key}>
-            <Link to={item.key} >
+            <Link to={item.key}  >
               <Icon type={item.icon} />
               <span>{item.title}</span></Link>
           </Menu.Item>
