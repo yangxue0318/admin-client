@@ -9,6 +9,7 @@ import menuList from '../../config/menuConfig'
 import {reqWeather} from '../../api'
 import LinkButton from '../../components/link-button'
 import {connect} from 'react-redux'
+import {logout} from '../../redux/actions'
 // const { confirm } = Modal;
  class Header extends Component{
      state={
@@ -24,11 +25,7 @@ import {connect} from 'react-redux'
                 console.log('OK');
                 //确定后删除内存的用户
                 //local
-                storageUtils.removeUser();
-                //内存
-                memoryUtils.user={};
-                //跳转到登录界面
-                this.props.history.replace('/login');
+              this.props.logout()
               },
             onCancel() {
               console.log('Cancel');
@@ -77,7 +74,7 @@ import {connect} from 'react-redux'
        //得到当前需要显示的title
       // const title=this.getTitle();
       const title=this.props.headerTitle
-       const user=memoryUtils.user;
+       const user=this.props.user;
        return (
            <div className="header">
                <div className="header-top">
@@ -100,7 +97,8 @@ import {connect} from 'react-redux'
 }
 export default connect(
  state=>({
-    headerTitle:state.headerTitle
+    headerTitle:state.headerTitle,
+    user:state.user
  }),
- {}
+ {logout}
 )(withRouter(Header));

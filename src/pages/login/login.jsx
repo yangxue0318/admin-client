@@ -6,6 +6,8 @@ import {Redirect} from 'react-router-dom'
 import {reqLogin} from '../../api'
 import storageUtils from '../../utils/storageUtils'
 import memoryUtils from '../../utils/memoryUtils'
+import {connect} from 'react-redux'
+import {login} from '../../redux/actions'
 const Item =Form.Item
  class Login extends Component{
     validatorPWd=(rule,value,callback)=>{
@@ -37,35 +39,20 @@ const Item =Form.Item
         //统一验证
         this.props.form.validateFields(async(err, {username,password}) => {
             if (!err) {
+            this.props.login(username,password)
            
-             // console.log(`你登陆的用户名是${username},你的密码是${password}`);
-            const result=await reqLogin(username,password)
-            //登陆成功
-            if(result.status===0){
-              //将user信息保存在local当中
-              const user=result.data;
-             
-              //localStorage.setItem('user_key',JSON.stringify(user))
-              storageUtils.saveUser(user)
-              //保存在内存当中
-              memoryUtils.user=user;
-              //跳转到管理界面
-              this.props.history.replace('/')
-            }else{
-               message.error(result.msg);
             }
-          }
-          
           })
        
       }
     render(){
         //读取保存的user,如果存在，直接跳转到管理界面
       //const user=JSON.parse(localStorage.getItem('user_key')||'{}')
-      const user=memoryUtils.user
+      const user=this.props.user
       if(user._id){
-          return <Redirect to="/"></Redirect>
+          return <Redirect to="/home"></Redirect>
       }
+      const errorMsg=user.errorMsg
         const { getFieldDecorator } = this.props.form;
         return (
             <div className="login">
@@ -74,6 +61,7 @@ const Item =Form.Item
                     <h1>后台管理系统</h1>
                 </div>
                <div className="login-content">
+                  {errorMsg?<div style={{color:'red'}}>{errorMsg}</div>:null}
                    <h1>用户登录</h1>
                    <Form onSubmit={this.handleSubmit} className="login-form">
         <Item>
@@ -123,4 +111,9 @@ const Item =Form.Item
 }
 
 const WraapedLoginFrom=Form.create()(Login)// Form.create()返回的就是一个高阶组件
-export default WraapedLoginFrom;
+export default connect(
+  state=>({
+    user:state.user
+  }),
+    {login}
+)(WraapedLoginFrom);

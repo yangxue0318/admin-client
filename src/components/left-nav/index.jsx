@@ -14,7 +14,7 @@ class LeftNav extends Component {
   //判断当前用户是否有此item的权限
   hasAuth = (item) => {
     // 得到当前用户的所有权限
-    const user = memoryUtils.user
+    const user = this.props.user
     const menus = user.role.menus
     // 1. 如果当前用户是admin
     // 2. 如果item是公开的
@@ -194,7 +194,9 @@ class LeftNav extends Component {
 //新组件向LeftNav传递三个属性
 //结果它可以操作路由的相关语法
 export default connect(
-  state=>({}),
+  state=>({
+    user:state.user
+  }),
   {setHeaderTitle}
 
 )(withRouter(LeftNav));

@@ -13,12 +13,13 @@ import User from '../user/user'
 import Bar from '../charts/bar'
 import Line from '../charts/line'
 import Pie from '../charts/pie'
+import {connect} from 'react-redux'
 const {Footer, Sider, Content } = Layout;
-export default class Admin extends Component{
+ class Admin extends Component{
     render(){
         //读取保存的user,如果不存在，直接跳转到登录界面
        // const user=JSON.parse(localStorage.getItem('user_key')||'{}')
-       const user=memoryUtils.user
+       const user=this.props.user
         if(!user._id){
             return <Redirect to="/login"></Redirect>
         }
@@ -51,3 +52,7 @@ export default class Admin extends Component{
         )
     }
 }
+export default connect(
+  state=>({user:state.user}),
+  {}
+)(Admin)
